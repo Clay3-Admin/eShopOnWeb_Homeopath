@@ -22,7 +22,11 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 
-if (builder.Environment.IsDevelopment() || builder.Environment.EnvironmentName == "Docker"){
+var isLocalEnvironment = builder.Environment.IsDevelopment()
+    || builder.Environment.EnvironmentName == "Docker"
+    || builder.Environment.EnvironmentName == "Testing";
+
+if (isLocalEnvironment){
     // Configure SQL Server (local)
     Microsoft.eShopWeb.Infrastructure.Dependencies.ConfigureServices(builder.Configuration, builder.Services);
 }
@@ -166,7 +170,7 @@ app.UseHealthChecks("/health",
             await context.Response.WriteAsync(result);
         }
     });
-if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
+if (isLocalEnvironment)
 {
     app.Logger.LogInformation("Adding Development middleware...");
     app.UseDeveloperExceptionPage();
