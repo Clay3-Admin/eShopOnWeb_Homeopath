@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -14,15 +15,24 @@ namespace Microsoft.eShopWeb.FunctionalTests.Web;
 
 public class TestApplication : WebApplicationFactory<IBasketViewModelService>
 {
-    private readonly string _environment = "Development";
+    private readonly string _environment = "Testing";
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
         builder.UseEnvironment(_environment);
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddConsole();
+        });
 
         // Add mock/test services to the builder here
         builder.ConfigureServices(services =>
         {
+            services.AddDataProtection()
+                .UseEphemeralDataProtectionProvider()
+                .SetApplicationName("eShopOnWeb.FunctionalTests");
+
             var descriptors = services.Where(d =>
                                                 d.ServiceType == typeof(DbContextOptions<CatalogContext>) ||
                                                 d.ServiceType == typeof(DbContextOptions<AppIdentityDbContext>))
