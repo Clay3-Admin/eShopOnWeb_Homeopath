@@ -9,7 +9,17 @@ public static class ImageValidators
 
     public static bool IsValidImage(this byte[] postedFile, string fileName)
     {
-        return postedFile != null && postedFile.Length > 0 && postedFile.Length <= ImageMaximumBytes && IsExtensionValid(fileName);
+        if (postedFile == null || postedFile.Length == 0 || postedFile.Length > ImageMaximumBytes)
+        {
+            return false;
+        }
+
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            return false;
+        }
+
+        return IsExtensionValid(fileName);
     }
 
     private static bool IsExtensionValid(string fileName)
