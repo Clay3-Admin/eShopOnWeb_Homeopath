@@ -49,6 +49,12 @@ jobs:
             exit 1
           }
 
-          if ($exitCode -ne 0 -and $text -notmatch 'docker-compose\.dcproj.*package\.config') {
+          $onlyUnsupportedPackageConfigProject = (
+            $text -match 'docker-compose\.dcproj' -and
+            $text -match 'package\.config' -and
+            $text -notmatch 'error:'
+          )
+
+          if ($exitCode -ne 0 -and -not $onlyUnsupportedPackageConfigProject) {
             exit $exitCode
           }
