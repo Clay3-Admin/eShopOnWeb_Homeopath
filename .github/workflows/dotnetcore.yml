@@ -60,3 +60,5 @@ jobs:
           if ($exitCode -ne 0 -and -not $onlyUnsupportedPackageConfigProject) {
             exit $exitCode
           }
+
+          exit 0
