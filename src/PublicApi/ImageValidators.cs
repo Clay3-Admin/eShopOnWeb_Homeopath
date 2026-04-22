@@ -24,12 +24,20 @@ public static class ImageValidators
             return false;
         }
 
-        if (!IsExtensionValid(fileName))
+        var trimmedFileName = fileName.Trim();
+        var safeFileName = Path.GetFileName(trimmedFileName);
+        if (string.IsNullOrWhiteSpace(safeFileName) ||
+            !string.Equals(safeFileName, trimmedFileName, StringComparison.Ordinal))
         {
             return false;
         }
 
-        var extension = Path.GetExtension(fileName);
+        if (!IsExtensionValid(safeFileName))
+        {
+            return false;
+        }
+
+        var extension = Path.GetExtension(safeFileName);
 
         if (string.Equals(extension, ".jpg", StringComparison.OrdinalIgnoreCase) ||
             string.Equals(extension, ".jpeg", StringComparison.OrdinalIgnoreCase))
@@ -44,7 +52,9 @@ public static class ImageValidators
 
         if (string.Equals(extension, ".gif", StringComparison.OrdinalIgnoreCase))
         {
-            return HasSignature(postedFile, Gif87aSignature) || HasSignature(postedFile, Gif89aSignature);
+            var matchesGif87a = HasSignature(postedFile, Gif87aSignature);
+            var matchesGif89a = HasSignature(postedFile, Gif89aSignature);
+            return matchesGif87a || matchesGif89a;
         }
 
         return false;
