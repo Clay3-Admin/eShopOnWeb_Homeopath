@@ -25,6 +25,26 @@ public static class ImageValidators
         }
 
         var trimmedFileName = fileName.Trim();
+
+        var invalidChars = Path.GetInvalidFileNameChars();
+        for (int i = 0; i < trimmedFileName.Length; i++)
+        {
+            char current = trimmedFileName[i];
+
+            for (int j = 0; j < invalidChars.Length; j++)
+            {
+                if (current == invalidChars[j])
+                {
+                    if (current == Path.DirectorySeparatorChar || current == Path.AltDirectorySeparatorChar)
+                    {
+                        break;
+                    }
+
+                    return false;
+                }
+            }
+        }
+
         var safeFileName = Path.GetFileName(trimmedFileName);
         if (string.IsNullOrWhiteSpace(safeFileName) ||
             !string.Equals(safeFileName, trimmedFileName, StringComparison.Ordinal))
